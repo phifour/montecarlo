@@ -4,7 +4,7 @@ body {
 
 .node {
   cursor: pointer;
-  stroke: #fff;
+  stroke: #000;
 }
 
 .node circle {
@@ -15,6 +15,7 @@ body {
 
 .node text {
   font: 10px sans-serif;
+  color: #000;
 }
 
 .link {
@@ -22,9 +23,18 @@ body {
   stroke: #000;
 }
 
-.border {
-  fill: none;
-  shape-rendering: crispEdges;
-  stroke: #aaa;
+
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
 }
 
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}

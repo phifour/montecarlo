@@ -19,6 +19,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AddassignmentComponent} from "./todo/components/addassignment.component";
 import {SurveyComponent} from "./todo/components/survey.component";
 import { PlotfunctionComponent } from "./todo/components/plotfunction.component";
+import { TreegraphComponent } from "./todo/components/treegraph.component";
+
 
 @NgModule({
     imports: [
@@ -43,7 +45,8 @@ import { PlotfunctionComponent } from "./todo/components/plotfunction.component"
         AddassignmentComponent,
         AboutComponent,
         SurveyComponent,
-        PlotfunctionComponent
+        PlotfunctionComponent,
+        TreegraphComponent
     ],
     providers: [
         appRoutingProviders,
