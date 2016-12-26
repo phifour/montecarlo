@@ -20,6 +20,7 @@ import {AddassignmentComponent} from "./todo/components/addassignment.component"
 import {SurveyComponent} from "./todo/components/survey.component";
 import { PlotfunctionComponent } from "./todo/components/plotfunction.component";
 import { TreegraphComponent } from "./todo/components/treegraph.component";
+import { HistogramComponent } from "./todo/components/histogram.component";
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { TreegraphComponent } from "./todo/components/treegraph.component";
         AboutComponent,
         SurveyComponent,
         PlotfunctionComponent,
-        TreegraphComponent
+        TreegraphComponent,
+        HistogramComponent
     ],
     providers: [
         appRoutingProviders,
