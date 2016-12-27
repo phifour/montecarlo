@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import {EquationComponent} from "./equation.component";
 import {MathAssignment} from "../models/mathassignment";
 import { Option } from "../models/option";
 import { BSPrice } from "../models/bsprice";
@@ -63,6 +62,13 @@ import { HistogramComponent } from "./histogram.component";
 </div>
 
 <div class="form-group row">
+  <label for="steps-number-input" class="col-xs-2 col-form-label">Steps</label>
+  <div class="col-xs-10">
+    <input class="form-control" type="number" [(ngModel)]="option.N" id="steps-number-input">
+  </div>
+</div>
+
+<div class="form-group row">
   <label for="example-number-input" class="col-xs-2 col-form-label">Days to maturity</label>
   <div class="col-xs-10">
     <input class="form-control" type="number" value="180" id="example-number-input">
@@ -75,10 +81,11 @@ import { HistogramComponent } from "./histogram.component";
     <input class="form-control" type="number" [(ngModel)]="Nsteps" id="example-number-input">
   </div>
 </div>
-
+<br>
 <button type="button" (click)="rerun()" class="btn btn-primary btn-block">Price Option</button>
-
-<div *ngIf="showresults" class="well">
+<br>
+<div *ngIf="showresults" >
+<div class="well">
 <h5>Results of Estimation</h5>
 <table class="table table-inverse">
   <thead>
@@ -98,20 +105,23 @@ import { HistogramComponent } from "./histogram.component";
   </tbody>
 </table>
 
+<br>
+<button type="button" (click)="downloadresults()" class="btn btn-primary btn-block">Download {{filename}}</button>
+<br>
+</div>
 </div>
 
   <app-plotfunction [(values)]="data"></app-plotfunction>
-    
+
   <app-histogram [(title)]="option.type" [(values)]="satt"></app-histogram>
   
   </div>
   `
 })
 
-export class ListofassignmentsComponent {
+export class OptionPricingComponent {
 
  constructor(private router: Router, private mathservice: MathService) {
-   this.data = [];
   }
 
  id:number;
@@ -126,6 +136,7 @@ export class ListofassignmentsComponent {
  result:any;
  option_payoffs:any;
  showresults:boolean;
+ filename:string;
 
   @Input() mathassignment: MathAssignment;
   // answer:Answer;
@@ -160,54 +171,41 @@ export class ListofassignmentsComponent {
     };
   }
 
-  rerun() {
-  
-  this.showresults = true;
 
-// function datenum(v, date1904) {
-// 	if(date1904) v+=1462;
-// 	var epoch = Date.parse(v);
-// 	return (epoch - new Date(Date.UTC(1899, 11, 30))) / (24 * 60 * 60 * 1000);
-// }
- 
-// function sheet_from_array_of_arrays() {
-// 	var ws = {};
-//       var C = 1;
-//       var R = 1;
-// 			var cell = {v: 123, t:'x'};
-// 			var cell_ref = XLSX.utils.encode_cell({c:C,r:R});
-// 			if(typeof cell.v === 'number') {cell.t = 'n';}
-// 			// else if(typeof cell.v === 'boolean') {cell.t = 'b';}
-// 			// else {cell.t = 's';}
-// 			ws[cell_ref] = cell;
-// 	return ws;
-// }
- 
 
-function exportToCsv(filename, rows) {
+ exportToCsv(filename, rows) {
         var processRow = function (row) {
             var finalVal = '';
             for (var j = 0; j < row.length; j++) {
-                var innerValue = row[j] === null ? '' : row[j].toString();
-                if (row[j] instanceof Date) {
-                    innerValue = row[j].toLocaleString();
-                };
-                var result = innerValue.replace(/"/g, '""');
-                if (result.search(/("|,|\n)/g) >= 0) {
-                    result = '"' + result + '"';}
+                console.log('row',row[j]);
+                // var innerValue = row[j] === null ? '' : row[j].toString();
+                // if (row[j] instanceof Date) {
+                //     innerValue = row[j].toLocaleString();
+                // };
+                // var result = innerValue.replace(/"/g, '""');
+                // if (result.search(/("|,|\n)/g) >= 0) {
+                //     result = '"' + result + '"';}
+                // if (j > 0) {
+                //     finalVal += ',';
+                // finalVal += result;}
+                // var innerValue = row[j] === null ? '' : row[j].toString();
+                // if (row[j] instanceof Date) {
+                //     innerValue = row[j].toLocaleString();
+                // };
                 if (j > 0) {
-                    finalVal += ',';
-                finalVal += result;}
+                  finalVal = finalVal + ';' + row[j];
+                } else {
+                  finalVal = row[j];
+                }
+
             }
             return finalVal + '\n';
         };
 
         var csvFile = '';
         for (var i = 0; i < rows.length; i++) {
-            csvFile += processRow(rows[i]);
+            csvFile = csvFile + processRow(rows[i]);
         }
-
-        csvFile = 'a; b\n c; d';
 
         var blob = new Blob([csvFile], { type: 'text/csv;charset=utf-8;' });
         if (navigator.msSaveBlob) { // IE 10+
@@ -226,29 +224,18 @@ function exportToCsv(filename, rows) {
             }
         }
     }
-    
-    
-exportToCsv('export.csv', [
-	['name','description'],	
-  ['david','123'],
-  ['jona','""'],
-  ['a','b'],
 
-]);
+downloadresults() {
+  this.exportToCsv(this.filename, [
+	['estimated price',this.result.price],	
+  ['number of simulations', this.result.Nsteps]
+  ]);
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  rerun() {
+    var d = new Date();
+    this.filename = 'result_' + d.toDateString() + ".csv";
+    this.showresults = true;
     // this.genseries();this.option.K
     this.mc = new MonteCarlo(this.option);
     this.data = this.mc.geoBrownian_series(1,50);
