@@ -4,24 +4,41 @@ import { Component, OnInit, Input, OnChanges, SimpleChange  } from '@angular/cor
     selector: 'app-plotfunction',
     template: `
     <h5>{{title}}</h5>
-    <div *ngIf="values.length > 0" id="plotscreen"></div>
-    <div *ngIf="values.length < 1">
+    <div id="plotscreen"></div>
+    <div *ngIf="datalength < 1">
         <h5>No data to plot</h5>
     </div>
+    <h5>{{datalength}}</h5>
   `
 })
+
+    // <div *ngIf="values.length > 0" id="plotscreen"></div>
+    // <div *ngIf="values.length < 1">
+    //     <h5>No data to plot</h5>
+    // </div>
+    //    <div id="plotscreen"></div>
 
 export class PlotfunctionComponent implements OnInit {
 
     @Input() values: any;
     @Input() title: string;
     @Input() usedates: number;
+    data: number[];
+    datalength:number = 0;
+
+    ngOnInit() {
+        this.data = [];
+        this.update(); 
+    }
 
     ngOnChanges(changes: {[propKey: string]: SimpleChange}) {
         let log: string[] = [];
         this.update();
-        this.update();
-        console.log('changes in plot',changes);
+        this.data = [];
+        for (var j = 0; j < this.values.length; j++) {
+            this.data.push(this.values[j].close);
+        }
+        this.datalength = this.values.length;
         // for (let propName in changes) {
         //     console.log('changes',changes);
         // // let changedProp = changes[propName];
@@ -115,10 +132,5 @@ export class PlotfunctionComponent implements OnInit {
             .attr("transform", "translate("+ (width/2) +","+(height-(padding/3))+")")  // centre below axis
             .text("Time");
     }
-
-    ngOnInit() {
-         this.update(); 
-    }
-
 
     }

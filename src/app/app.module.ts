@@ -13,7 +13,8 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { PlotfunctionComponent } from "./todo/components/plotfunction.component";
 import { TreegraphComponent } from "./todo/components/treegraph.component";
 import { HistogramComponent } from "./todo/components/histogram.component";
-
+import { BinPricingComponent } from "./todo/components/binpricing.component";
+import { BinominalTreeComponent } from "./todo/components/binominaltree.component";
 
 @NgModule({
     imports: [
@@ -31,7 +32,9 @@ import { HistogramComponent } from "./todo/components/histogram.component";
         AboutComponent,
         PlotfunctionComponent,
         TreegraphComponent,
-        HistogramComponent
+        HistogramComponent,
+        BinPricingComponent,
+        BinominalTreeComponent
     ],
     providers: [
         appRoutingProviders,

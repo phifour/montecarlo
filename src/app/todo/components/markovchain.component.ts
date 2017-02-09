@@ -64,12 +64,13 @@ export class MarkovChainComponent {
                 if (row[j] instanceof Date) {
                     innerValue = row[j].toLocaleString();
                 };
-                var result = innerValue.replace(/"/g, '""');
-                if (result.search(/("|,|\n)/g) >= 0) {
-                    result = '"' + result + '"';}
+                var result = innerValue; //.replace(/"/g, '""');
+                // if (result.search(/("|,|\n)/g) >= 0) {
+                //     result = '"' + result + '"';}
                 if (j > 0) {
                     finalVal += ';';
-                finalVal += result;}
+                    finalVal += result;
+                }
 
             }
             return finalVal + '\n';
@@ -105,7 +106,7 @@ export class MarkovChainComponent {
 downloadresults() {
   this.exportToCsv(this.filename, [
 	['price',this.result.price],	
-  ['david','123']
+    ['david','123']
   ]);
 }
 

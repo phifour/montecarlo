@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import {MathAssignment} from "../models/mathassignment";
+import { MathAssignment } from "../models/mathassignment";
 import { Option } from "../models/option";
 import { BSPrice } from "../models/bsprice";
 import { MonteCarlo } from "../models/montecarlo";
@@ -20,6 +20,8 @@ import { HistogramComponent } from "./histogram.component";
       <select aria-label="Search by type" class="form-control" [(ngModel)]="option.type" id="optiontype">
         <option value="eurocall">European Call</option>
         <option value="europut">European Put</option>
+        <option value="asiancall">Asian Call</option>
+        <option value="asianput">Asian Put</option>
       </select>
       </div>
   </div>
@@ -98,7 +100,7 @@ import { HistogramComponent } from "./histogram.component";
   <tbody>
     <tr>
       <td>{{result.price}}</td>
-      <td></td>
+      <td>{{result.BSPrice}}</td>
       <td>{{result.Nsteps}}</td>
     </tr>
   
@@ -130,6 +132,7 @@ export class OptionPricingComponent {
  type:string;
  option:Option;
  bsprice:BSPrice;
+ bs_price:number;
  Nsteps:number;
  mc:MonteCarlo;
  satt:number[];
@@ -148,22 +151,23 @@ export class OptionPricingComponent {
     this.satt = [1,2,3];
     this.result = {price:100};
     this.data = [];
+    this.bs_price = 0;
     this.bsprice = new BSPrice(this.option);
     this.option_payoffs = {
       eurocall:{formular:'max(0,S-K)',
       fcn:
-      function abc(x) {
-      if(x > 100) {
-        return x - 100;
+      function abc(S,K) {
+      if(S > K) {
+        return S - K;
       } else {
         return 0;
       }
       }},
       europut:{formular:'max(0,K-S)',
       fcn:
-      function abc(x) {
-      if(x > 100) {
-        return x - 100;
+      function abc(S,K) {
+      if(S < K) {
+        return K - S;
       } else {
         return 0;
       }
@@ -225,9 +229,20 @@ export class OptionPricingComponent {
         }
     }
 
+setcomma(x) {
+  var newx = '' + x;
+  return newx.replace(".", ",");
+}
+
 downloadresults() {
   this.exportToCsv(this.filename, [
-	['estimated price',this.result.price],	
+  ['Option type', this.option.type],	
+  ['S0', this.setcomma(math.round(this.option.S0 ,3))],	
+  ['Strike', this.setcomma(math.round(this.option.K ,3))],	
+  ['Interest rate' , (''+math.round(this.option.r ,3)).replace(".", ",")],	
+  ['Volatility', (''+math.round(this.option.volatility,3)).replace(".", ",")],	
+	['Eestimated price', (''+math.round(this.result.price,3)).replace(".", ",")],	
+  ['Black scholes price', this.setcomma(math.round(this.result.BSPrice ,3))],	
   ['number of simulations', this.result.Nsteps]
   ]);
 }
@@ -239,10 +254,11 @@ downloadresults() {
     // this.genseries();this.option.K
     this.mc = new MonteCarlo(this.option);
     this.data = this.mc.geoBrownian_series(1,50);
+    console.log('Data for plotting', this.data);
     console.log('option',this.option);
     this.result = this.mc.priceOption(1,50,this.Nsteps,abc);
-
-    console.log('Price European Call ',this.bsprice.EuropeanCall(this.option.S0,this.option.K,this.option.K,this.option.volatility,1));
+    console.log('Price European Call ',this.bsprice.EuropeanCall(this.option.S0,this.option.r,this.option.K,this.option.volatility,1));
+    this.result.BSPrice = this.bsprice.EuropeanCall(this.option.S0,this.option.K,this.option.r,this.option.volatility,1);
     
     function abc(x) {
       if(x > 100) {
@@ -251,7 +267,6 @@ downloadresults() {
         return 0;
       }
     }
-
     this.satt = this.mc.MonteCarlo(1,50,this.Nsteps,abc);
     //  console.log(satt);
     // console.log(this.data);

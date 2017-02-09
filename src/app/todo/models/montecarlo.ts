@@ -76,13 +76,12 @@ export class MonteCarlo {
             return input;
         }
     }
-
         
     public MonteCarlo(T:number, N:number, Nsteps:number, payoff:any) {
         var profit = [];
         for (var i=0;i<Nsteps;i++) {
             var S_at_T = this.geoBrownian(T, N);
-            profit.push(payoff(S_at_T));
+            profit.push(payoff(S_at_T,this.o.K));
             //console.log('S_at_T',S_at_T);
         }
         return profit;
@@ -93,7 +92,8 @@ export class MonteCarlo {
             T:T,
             intervals:N,
             price:0,
-            Nsteps:Nsteps
+            Nsteps:Nsteps,
+            BSPrice:'NA'
         };
         var profit = [];
         for (var i=0;i<Nsteps;i++) {
